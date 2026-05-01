@@ -1,4 +1,5 @@
-const API = "http://127.0.0.1:8000";
+const API = "https://favelas-backend.onrender.com";
+
 console.log("JS OK");
 
 // ======================
@@ -13,10 +14,8 @@ async function enviarOTP() {
         return;
     }
 
-    if (btn) {
-        btn.disabled = true;
-        btn.innerText = "Enviando...";
-    }
+    btn.disabled = true;
+    btn.innerText = "Enviando...";
 
     try {
         const res = await fetch(`${API}/auth/send-otp`, {
@@ -38,10 +37,8 @@ async function enviarOTP() {
     } catch (err) {
         alert("Error de conexión con el servidor");
     } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerText = "Enviar código";
-        }
+        btn.disabled = false;
+        btn.innerText = "Enviar código";
     }
 }
 
@@ -58,10 +55,8 @@ async function verificarOTP() {
         return;
     }
 
-    if (btn) {
-        btn.disabled = true;
-        btn.innerText = "Verificando...";
-    }
+    btn.disabled = true;
+    btn.innerText = "Verificando...";
 
     try {
         const res = await fetch(`${API}/auth/verify-otp`, {
@@ -73,7 +68,7 @@ async function verificarOTP() {
         const data = await res.json();
 
         if (!res.ok || !data.token) {
-            alert(data.error || "OTP incorrecto");
+            alert(data.error || data.msg || "OTP incorrecto");
             return;
         }
 
@@ -83,10 +78,8 @@ async function verificarOTP() {
     } catch (err) {
         alert("Error de conexión con el servidor");
     } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerText = "Verificar";
-        }
+        btn.disabled = false;
+        btn.innerText = "Verificar";
     }
 }
 
@@ -121,6 +114,8 @@ function getHeaders(isJSON = false) {
 }
 
 // ----------------------
+// 📥 CARGAR ESTUDIANTES
+// ----------------------
 async function cargarEstudiantes() {
     const res = await fetch(`${API}/students`, {
         headers: getHeaders()
@@ -144,13 +139,15 @@ async function cargarEstudiantes() {
         lista.innerHTML += `
             <li>
                 ${e.nombre} - Edad: ${e.edad} - Nota: ${e.nota}
-                <button onclick="editarEstudiante(${e.id}, ${JSON.stringify(e.nombre)}, ${e.edad}, ${e.nota})">✏️</button>
+                <button onclick="editarEstudiante(${e.id}, \`${e.nombre}\`, ${e.edad}, ${e.nota})">✏️</button>
                 <button onclick="eliminarEstudiante(${e.id})">🗑️</button>
             </li>
         `;
     });
 }
 
+// ----------------------
+// ➕ CREAR
 // ----------------------
 async function crearEstudiante() {
     const nombre = document.getElementById("nombre").value.trim();
@@ -173,6 +170,8 @@ async function crearEstudiante() {
 }
 
 // ----------------------
+// ✏️ EDITAR
+// ----------------------
 function editarEstudiante(id, nombre, edad, nota) {
     estudianteEditando = id;
 
@@ -184,6 +183,8 @@ function editarEstudiante(id, nombre, edad, nota) {
     document.getElementById("btnActualizar").style.display = "inline";
 }
 
+// ----------------------
+// 🔄 ACTUALIZAR
 // ----------------------
 async function actualizarEstudiante() {
     await fetch(`${API}/students/${estudianteEditando}`, {
@@ -206,6 +207,8 @@ async function actualizarEstudiante() {
 }
 
 // ----------------------
+// 🗑️ ELIMINAR
+// ----------------------
 async function eliminarEstudiante(id) {
     if (!confirm("¿Eliminar estudiante?")) return;
 
@@ -218,6 +221,8 @@ async function eliminarEstudiante(id) {
 }
 
 // ----------------------
+// 🧹 LIMPIAR
+// ----------------------
 function limpiarCampos() {
     document.getElementById("nombre").value = "";
     document.getElementById("edad").value = "";
@@ -225,12 +230,13 @@ function limpiarCampos() {
 }
 
 // ----------------------
-if (window.location.pathname.includes("dashboard.html")) {
-    cargarEstudiantes();
-}
-
+// 🚀 AUTO LOAD SEGURO
 // ----------------------
 document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("lista")) {
+        cargarEstudiantes();
+    }
+
     const btnGuardar = document.getElementById("btnGuardar");
     const btnActualizar = document.getElementById("btnActualizar");
 
