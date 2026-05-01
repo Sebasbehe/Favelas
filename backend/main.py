@@ -1,16 +1,18 @@
 from fastapi import FastAPI, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-import crud, schemas, auth
-import models
-from database import engine
-from database import engine, SessionLocal
 
+from backend import crud, schemas, auth, models
+from backend.database import engine, SessionLocal
+
+# crear tablas
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# -----------------------
 # 🔥 CORS
+# -----------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,7 +22,7 @@ app.add_middleware(
 )
 
 # -----------------------
-# 🧠 DB
+# 🧠 DB SESSION
 # -----------------------
 def get_db():
     db = SessionLocal()
@@ -43,7 +45,6 @@ def verify_otp(data: schemas.OTPVerify, db: Session = Depends(get_db)):
 # -----------------------
 # 📚 CRUD ESTUDIANTES
 # -----------------------
-
 @app.post("/students")
 def crear(est: schemas.EstudianteCreate, token: str = Header(...), db: Session = Depends(get_db)):
     email = auth.verificar_token(token)
