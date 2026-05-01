@@ -1,5 +1,4 @@
 import random
-import crud
 import smtplib
 import os
 
@@ -8,6 +7,8 @@ from datetime import datetime, timedelta
 from email.message import EmailMessage
 from fastapi import HTTPException
 from dotenv import load_dotenv
+
+from . import crud   # 🔥 CORREGIDO
 
 load_dotenv()
 
