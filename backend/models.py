@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from .database import Base
 
 # Usuario para autenticación OTP
 class User(Base):
