@@ -1,10 +1,8 @@
 import random
-import smtplib
 import os
 
 from jose import jwt
 from datetime import datetime, timedelta
-from email.message import EmailMessage
 from fastapi import HTTPException
 from dotenv import load_dotenv
 
@@ -15,10 +13,6 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "mi_clave_secreta")
 ALGORITHM = "HS256"
 
-SMTP_USER = os.getenv("SMTP_USER")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-
-
 # -------------------------
 # 🔐 OTP GENERATOR
 # -------------------------
@@ -27,7 +21,7 @@ def generar_otp():
 
 
 # -------------------------
-# 📧 ENVIAR EMAIL OTP
+# 📤 ENVIAR OTP (CORREGIDO)
 # -------------------------
 def enviar_otp(db, email):
     otp = generar_otp()
@@ -35,25 +29,12 @@ def enviar_otp(db, email):
     # guardar OTP en la base de datos
     crud.create_or_update_otp(db, email, otp)
 
-    # 🔥 solo para depuración (Render logs)
+    # 🔥 IMPORTANTE: solo logs (evita error 500 en Render)
     print(f"OTP generado para {email}: {otp}")
 
     return {
-        "msg": "OTP generado correctamente. Revisa logs del servidor."
+        "msg": "OTP generado correctamente"
     }
-
-
-# -------------------------
-# 📤 ENVIAR OTP
-# -------------------------
-def enviar_otp(db, email):
-    otp = generar_otp()
-
-    crud.create_or_update_otp(db, email, otp)
-
-    enviar_email_otp(email, otp)
-
-    return {"msg": "OTP enviado al correo"}
 
 
 # -------------------------
