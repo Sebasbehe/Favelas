@@ -29,32 +29,18 @@ def generar_otp():
 # -------------------------
 # 📧 ENVIAR EMAIL OTP
 # -------------------------
-def enviar_email_otp(email: str, otp: str):
+def enviar_otp(db, email):
+    otp = generar_otp()
 
-    if not SMTP_USER or not SMTP_PASSWORD:
-        raise HTTPException(status_code=500, detail="SMTP no configurado")
+    # guardar OTP en la base de datos
+    crud.create_or_update_otp(db, email, otp)
 
-    msg = EmailMessage()
-    msg["Subject"] = "Tu código OTP"
-    msg["From"] = SMTP_USER
-    msg["To"] = email
-    msg.set_content(f"Tu código OTP es: {otp}")
+    # 🔥 solo para depuración (Render logs)
+    print(f"OTP generado para {email}: {otp}")
 
-    try:
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as smtp:
-            smtp.ehlo()
-            smtp.starttls()
-            smtp.ehlo()
-
-            smtp.login(SMTP_USER, SMTP_PASSWORD)
-            smtp.send_message(msg)
-
-    except Exception as e:
-        print("Error enviando OTP:", e)
-        raise HTTPException(
-            status_code=500,
-            detail="Error enviando correo OTP"
-        )
+    return {
+        "msg": "OTP generado correctamente. Revisa logs del servidor."
+    }
 
 
 # -------------------------
