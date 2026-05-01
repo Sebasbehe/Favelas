@@ -3,16 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from . import crud, schemas, auth, models
-from backend.database import engine, SessionLocal
+from .database import engine, SessionLocal
 
-# crear tablas
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# -----------------------
-# 🔥 CORS
-# -----------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,9 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -----------------------
-# 🧠 DB SESSION
-# -----------------------
 def get_db():
     db = SessionLocal()
     try:
@@ -31,9 +24,6 @@ def get_db():
     finally:
         db.close()
 
-# -----------------------
-# 🔐 AUTH OTP
-# -----------------------
 @app.post("/auth/send-otp")
 def send_otp(data: schemas.EmailSchema, db: Session = Depends(get_db)):
     return auth.enviar_otp(db, data.email)
@@ -42,9 +32,6 @@ def send_otp(data: schemas.EmailSchema, db: Session = Depends(get_db)):
 def verify_otp(data: schemas.OTPVerify, db: Session = Depends(get_db)):
     return auth.verificar_otp(db, data.email, data.otp)
 
-# -----------------------
-# 📚 CRUD ESTUDIANTES
-# -----------------------
 @app.post("/students")
 def crear(est: schemas.EstudianteCreate, token: str = Header(...), db: Session = Depends(get_db)):
     email = auth.verificar_token(token)

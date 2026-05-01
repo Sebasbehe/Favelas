@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
-from . import models
-import schemas
+from . import models, schemas
 
 # -----------------------
 # 📚 ESTUDIANTES
@@ -11,7 +10,7 @@ def crear_estudiante(db: Session, estudiante: schemas.EstudianteCreate, email: s
         nombre=estudiante.nombre,
         edad=estudiante.edad,
         nota=estudiante.nota,
-        owner=email   # 🔥 IMPORTANTE
+        owner=email
     )
     db.add(nuevo)
     db.commit()
@@ -57,7 +56,7 @@ def eliminar_estudiante(db: Session, estudiante_id: int, email: str):
 
 
 # -----------------------
-# 🔐 USER / OTP
+# 🔐 OTP
 # -----------------------
 
 def get_user_by_email(db: Session, email: str):
