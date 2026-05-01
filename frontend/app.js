@@ -6,7 +6,7 @@ console.log("JS OK");
 // 🔐 LOGIN - ENVIAR OTP
 // ======================
 async function enviarOTP() {
-    const email = document.getElementById("email")?.value.trim();
+    const email = document.getElementById("email").value.trim();
     const btn = document.getElementById("btnSend");
 
     if (!email) {
@@ -14,8 +14,10 @@ async function enviarOTP() {
         return;
     }
 
-    btn.disabled = true;
-    btn.innerText = "Enviando...";
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Enviando...";
+    }
 
     try {
         const res = await fetch(`${API}/auth/send-otp`, {
@@ -37,8 +39,10 @@ async function enviarOTP() {
     } catch (err) {
         alert("Error de conexión con el servidor");
     } finally {
-        btn.disabled = false;
-        btn.innerText = "Enviar código";
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = "Enviar código";
+        }
     }
 }
 
@@ -47,7 +51,7 @@ async function enviarOTP() {
 // ======================
 async function verificarOTP() {
     const email = localStorage.getItem("email");
-    const otp = document.getElementById("otp")?.value.trim();
+    const otp = document.getElementById("otp").value.trim();
     const btn = document.getElementById("btnVerify");
 
     if (!otp) {
@@ -55,8 +59,10 @@ async function verificarOTP() {
         return;
     }
 
-    btn.disabled = true;
-    btn.innerText = "Verificando...";
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Verificando...";
+    }
 
     try {
         const res = await fetch(`${API}/auth/verify-otp`, {
@@ -78,8 +84,10 @@ async function verificarOTP() {
     } catch (err) {
         alert("Error de conexión con el servidor");
     } finally {
-        btn.disabled = false;
-        btn.innerText = "Verificar";
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = "Verificar";
+        }
     }
 }
 
@@ -93,7 +101,7 @@ if (window.location.pathname.includes("dashboard.html")) {
 }
 
 // ======================
-// 📚 DASHBOARD CRUD
+// 📚 CRUD ESTUDIANTES
 // ======================
 let estudianteEditando = null;
 
@@ -114,7 +122,7 @@ function getHeaders(isJSON = false) {
 }
 
 // ----------------------
-// 📥 CARGAR ESTUDIANTES
+// 📥 LISTAR
 // ----------------------
 async function cargarEstudiantes() {
     const res = await fetch(`${API}/students`, {
@@ -139,7 +147,7 @@ async function cargarEstudiantes() {
         lista.innerHTML += `
             <li>
                 ${e.nombre} - Edad: ${e.edad} - Nota: ${e.nota}
-                <button onclick="editarEstudiante(${e.id}, \`${e.nombre}\`, ${e.edad}, ${e.nota})">✏️</button>
+                <button onclick="editarEstudiante(${e.id}, '${encodeURIComponent(e.nombre)}', ${e.edad}, ${e.nota})">✏️</button>
                 <button onclick="eliminarEstudiante(${e.id})">🗑️</button>
             </li>
         `;
@@ -175,7 +183,7 @@ async function crearEstudiante() {
 function editarEstudiante(id, nombre, edad, nota) {
     estudianteEditando = id;
 
-    document.getElementById("nombre").value = nombre;
+    document.getElementById("nombre").value = decodeURIComponent(nombre);
     document.getElementById("edad").value = edad;
     document.getElementById("nota").value = nota;
 
@@ -230,7 +238,7 @@ function limpiarCampos() {
 }
 
 // ----------------------
-// 🚀 AUTO LOAD SEGURO
+// 🚀 AUTOLOAD
 // ----------------------
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("lista")) {
