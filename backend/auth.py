@@ -8,11 +8,11 @@ from email.message import EmailMessage
 from fastapi import HTTPException
 from dotenv import load_dotenv
 
-from . import crud   # 🔥 CORREGIDO
+from . import crud
 
 load_dotenv()
 
-SECRET_KEY = "mi_clave_secreta"
+SECRET_KEY = os.getenv("SECRET_KEY", "mi_clave_secreta")
 ALGORITHM = "HS256"
 
 SMTP_USER = os.getenv("SMTP_USER")
@@ -31,6 +31,9 @@ def generar_otp():
 # -------------------------
 def enviar_email_otp(email: str, otp: str):
 
+    if not SMTP_USER or not SMTP_PASSWORD:
+        raise HTTPException(status_code=500, detail="SMTP no configurado")
+
     msg = EmailMessage()
     msg["Subject"] = "Tu código OTP"
     msg["From"] = SMTP_USER
@@ -38,14 +41,20 @@ def enviar_email_otp(email: str, otp: str):
     msg.set_content(f"Tu código OTP es: {otp}")
 
     try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=10) as smtp:
+            smtp.ehlo()
             smtp.starttls()
+            smtp.ehlo()
+
             smtp.login(SMTP_USER, SMTP_PASSWORD)
             smtp.send_message(msg)
 
     except Exception as e:
         print("Error enviando OTP:", e)
-        raise HTTPException(status_code=500, detail="Error enviando correo")
+        raise HTTPException(
+            status_code=500,
+            detail="Error enviando correo OTP"
+        )
 
 
 # -------------------------
@@ -76,7 +85,7 @@ def verificar_otp(db, email, otp):
             "token": token
         }
 
-    return {"error": "OTP incorrecto"}
+    raise HTTPException(status_code=400, detail="OTP incorrecto")
 
 
 # -------------------------
@@ -98,5 +107,5 @@ def verificar_token(token: str):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload["sub"]
 
-    except:
+    except Exception:
         raise HTTPException(status_code=401, detail="Token inválido")
