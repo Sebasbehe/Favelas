@@ -1,4 +1,4 @@
-
+/* Reset */
 * {
     margin: 0;
     padding: 0;
@@ -6,138 +6,70 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-
+/* Fondo */
 body {
     background: linear-gradient(135deg, #1e3c72, #2a5298);
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-
+/* Card */
 .container {
     background: #fff;
     padding: 30px;
-    border-radius: 18px;
-    width: 380px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    border-radius: 15px;
+    width: 350px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     text-align: center;
-    animation: fadeIn 0.4s ease-in-out;
+    animation: fadeIn 0.5s ease-in-out;
 }
-
 
 h2 {
-    margin-bottom: 15px;
-    color: #1e3c72;
+    margin-bottom: 20px;
 }
 
-h3 {
-    margin-top: 20px;
-    color: #444;
-}
-
-
+/* Inputs */
 input {
     width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
     border: 1px solid #ccc;
-    outline: none;
-    transition: 0.2s;
 }
 
-input:focus {
-    border-color: #2a5298;
-    box-shadow: 0 0 5px rgba(42,82,152,0.3);
-}
-
-
+/* Botón */
 button {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background: #2a5298;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     transition: 0.3s;
-    font-weight: bold;
 }
 
 button:hover {
     background: #1e3c72;
-    transform: translateY(-1px);
 }
 
-
-button[onclick="logout()"] {
-    background: #e74c3c;
-    margin-bottom: 15px;
-}
-
-button[onclick="logout()"]:hover {
-    background: #c0392b;
-}
-
-
-.acciones {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.acciones button {
-    width: 100%;
-}
-
-
+/* Lista */
 ul {
     margin-top: 15px;
     list-style: none;
 }
 
 li {
-    background: #f8f9fc;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-}
-
-
-li button {
-    width: auto;
-    padding: 5px 8px;
-    margin-left: 5px;
+    background: #f4f4f4;
+    padding: 10px;
+    margin: 5px 0;
     border-radius: 6px;
 }
 
-
-li button:nth-child(1) {
-    background: #f1c40f;
-    color: black;
-}
-
-li button:nth-child(1):hover {
-    background: #d4ac0d;
-}
-
-/* ELIMINAR */
-li button:nth-child(2) {
-    background: #e74c3c;
-}
-
-li button:nth-child(2):hover {
-    background: #c0392b;
-}
-
-/* ANIMACIÓN */
+/* Animación */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(10px);}
+    to { opacity: 1; transform: translateY(0);}
 }
