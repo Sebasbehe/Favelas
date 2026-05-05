@@ -12,26 +12,18 @@ from . import crud
 
 load_dotenv()
 
-# -------------------------
-# 🔑 CONFIG
-# -------------------------
+
 SECRET_KEY = os.getenv("SECRET_KEY", "mi_clave_secreta")
 ALGORITHM = "HS256"
 
-# 🔥 API KEY (desde Render)
+
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 
-# -------------------------
-# 🔐 OTP GENERATOR
-# -------------------------
 def generar_otp():
     return str(random.randint(100000, 999999))
 
 
-# -------------------------
-# 📧 ENVIAR EMAIL (RESEND)
-# -------------------------
 async def enviar_email_otp(email: str, otp: str):
     try:
         resend.Emails.send({
@@ -46,23 +38,18 @@ async def enviar_email_otp(email: str, otp: str):
         raise HTTPException(status_code=500, detail="Error enviando correo")
 
 
-# -------------------------
-# 📤 ENVIAR OTP
-# -------------------------
 async def enviar_otp(db, email):
     otp = generar_otp()
 
     crud.create_or_update_otp(db, email, otp)
 
-    # 🔥 ENVÍO REAL POR EMAIL
+
     await enviar_email_otp(email, otp)
 
     return {"msg": "OTP enviado al correo"}
 
 
-# -------------------------
-# 🔍 VERIFICAR OTP
-# -------------------------
+
 def verificar_otp(db, email, otp):
     user = crud.get_user_by_email(db, email)
 
@@ -77,9 +64,6 @@ def verificar_otp(db, email, otp):
     raise HTTPException(status_code=400, detail="OTP incorrecto")
 
 
-# -------------------------
-# 🔑 JWT TOKEN
-# -------------------------
 def crear_token(email: str):
     data = {
         "sub": email,
@@ -88,9 +72,7 @@ def crear_token(email: str):
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 
-# -------------------------
-# 🧠 VALIDAR TOKEN
-# -------------------------
+
 def verificar_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
