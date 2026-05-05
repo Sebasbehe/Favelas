@@ -1,39 +1,40 @@
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
-EMAIL_USER = os.getenv("EMAIL_USER")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
 
-def enviar_correo(destinatario: str, asunto: str, mensaje: str):
-    try:
-        msg = MIMEMultipart()
-        msg["From"] = EMAIL_USER
-        msg["To"] = destinatario
-        msg["Subject"] = asunto
+def enviar_correo(destinatario, asunto, mensaje):
 
-        msg.attach(MIMEText(mensaje, "html"))
+    url = "https://api.brevo.com/v3/smtp/email"
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-            servidor.login(EMAIL_USER, EMAIL_PASSWORD)
-            servidor.sendmail(
-                EMAIL_USER,
-                destinatario,
-                msg.as_string()
-            )
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
 
-        return {
-            "success": True,
-            "message": f"Correo enviado a {destinatario}"
-        }
+    payload = {
+        "sender": {
+            "name": "Favelas",
+            "email": "epsistemas@e2energiaeficiente.com"
+        },
+        "to": [
+            {
+                "email": destinatario
+            }
+        ],
+        "subject": asunto,
+        "htmlContent": mensaje
+    }
 
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    response = requests.post(
+        url,
+        json=payload,
+        headers=headers
+    )
+
+    return response.json()
