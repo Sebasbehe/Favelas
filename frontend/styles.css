@@ -1,4 +1,4 @@
-/* Reset */
+
 * {
     margin: 0;
     padding: 0;
@@ -6,16 +6,16 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* Fondo */
+
 body {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    height: 100vh;
+    background: #000; 
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Card */
+
 .container {
     background: #fff;
     padding: 30px;
@@ -30,7 +30,7 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* Inputs */
+
 input {
     width: 100%;
     padding: 10px;
@@ -39,7 +39,7 @@ input {
     border: 1px solid #ccc;
 }
 
-/* Botón */
+
 button {
     width: 100%;
     padding: 10px;
@@ -55,7 +55,7 @@ button:hover {
     background: #1e3c72;
 }
 
-/* Lista */
+
 ul {
     margin-top: 15px;
     list-style: none;
@@ -68,7 +68,7 @@ li {
     border-radius: 6px;
 }
 
-/* Animación */
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px);}
     to { opacity: 1; transform: translateY(0);}
