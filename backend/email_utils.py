@@ -20,7 +20,7 @@ def enviar_correo(destinatario, asunto, mensaje):
     payload = {
         "sender": {
             "name": "Favelas",
-            "email": "epsistemas@e2energiaeficiente.com"
+            "email": "sebastianpersmor2006@gmail.com"
         },
         "to": [
             {
