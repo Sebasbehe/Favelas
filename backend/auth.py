@@ -1,12 +1,12 @@
 import os
 import random
+import smtplib
 
+from email.mime.text import MIMEText
 from jose import jwt
 from datetime import datetime, timedelta
 from fastapi import HTTPException
 from dotenv import load_dotenv
-
-import resend
 
 from . import crud
 
@@ -20,8 +20,9 @@ SECRET_KEY = os.getenv("SECRET_KEY", "mi_clave_secreta")
 ALGORITHM = "HS256"
 
 
-# Configurar Resend
-resend.api_key = os.getenv("RESEND_API_KEY")
+# Credenciales de Gmail
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
 
 # Generar código OTP
@@ -34,22 +35,32 @@ async def enviar_email_otp(email: str, otp: str):
     try:
         print("Enviando OTP a:", email)
 
-        response = resend.Emails.send({
-            "from": "onboarding@resend.dev",
-            "to": [email],  # importante: como lista
-            "subject": "Código de verificación",
-            "html": f"""
-                <h2>Tu código OTP</h2>
-                <p>Tu código de verificación es:</p>
-                <h1>{otp}</h1>
-                <p>No compartas este código.</p>
-            """
-        })
+        html = f"""
+        <h2>Tu código de verificación</h2>
+        <p>Tu código OTP es:</p>
+        <h1>{otp}</h1>
+        <p>No compartas este código.</p>
+        """
 
-        print("Respuesta de Resend:", response)
+        msg = MIMEText(html, "html")
+        msg["Subject"] = "Código de verificación"
+        msg["From"] = EMAIL_USER
+        msg["To"] = email
+
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+
+            server.login(
+                EMAIL_USER,
+                EMAIL_PASSWORD
+            )
+
+            server.send_message(msg)
+
+        print("Correo enviado correctamente")
 
     except Exception as e:
-        print("Error enviando correo:", str(e))
+        print("Error SMTP:", str(e))
         raise HTTPException(
             status_code=500,
             detail=f"Error enviando correo: {str(e)}"
@@ -60,14 +71,14 @@ async def enviar_email_otp(email: str, otp: str):
 async def enviar_otp(db, email):
     otp = generar_otp()
 
-    # Guardar en base de datos
+    # Guardar OTP en la base de datos
     crud.create_or_update_otp(db, email, otp)
 
-    # Enviar correo
+    # Enviar OTP al correo
     await enviar_email_otp(email, otp)
 
     return {
-        "msg": "OTP enviado al correo"
+        "msg": "OTP enviado correctamente"
     }
 
 
@@ -89,7 +100,7 @@ def verificar_otp(db, email, otp):
     )
 
 
-# Crear JWT
+# Crear token JWT
 def crear_token(email: str):
     data = {
         "sub": email,
@@ -103,7 +114,7 @@ def crear_token(email: str):
     )
 
 
-# Verificar JWT
+# Verificar token JWT
 def verificar_token(token: str):
     try:
         payload = jwt.decode(
