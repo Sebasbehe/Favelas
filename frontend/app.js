@@ -2,9 +2,7 @@ const API = "https://favelas-backend.onrender.com";
 
 console.log("JS OK");
 
-// ======================
-// 🔐 LOGIN - ENVIAR OTP
-// ======================
+
 async function enviarOTP() {
     const email = document.getElementById("email")?.value.trim();
     const btn = document.getElementById("btnSend");
@@ -51,9 +49,6 @@ async function enviarOTP() {
     }
 }
 
-// ======================
-// 🔐 OTP - VERIFICAR
-// ======================
 async function verificarOTP() {
     const email = localStorage.getItem("email");
     const otp = document.getElementById("otp")?.value.trim();
@@ -96,18 +91,14 @@ async function verificarOTP() {
     }
 }
 
-// ======================
-// 🔒 PROTEGER DASHBOARD
-// ======================
+
 if (window.location.pathname.includes("dashboard.html")) {
     if (!localStorage.getItem("token")) {
         window.location.href = "login.html";
     }
 }
 
-// ======================
-// 📚 DASHBOARD CRUD
-// ======================
+
 let estudianteEditando = null;
 
 function getHeaders(isJSON = false) {
@@ -120,9 +111,7 @@ function getHeaders(isJSON = false) {
     return headers;
 }
 
-// ----------------------
-// 📥 CARGAR ESTUDIANTES
-// ----------------------
+
 async function cargarEstudiantes() {
     const res = await fetch(`${API}/students`, {
         headers: getHeaders()
@@ -153,9 +142,7 @@ async function cargarEstudiantes() {
     });
 }
 
-// ----------------------
-// ➕ CREAR
-// ----------------------
+
 async function crearEstudiante() {
     const nombre = document.getElementById("nombre").value.trim();
     const edad = Number(document.getElementById("edad").value);
@@ -176,9 +163,7 @@ async function crearEstudiante() {
     cargarEstudiantes();
 }
 
-// ----------------------
-// ✏️ EDITAR
-// ----------------------
+
 function editarEstudiante(id, nombre, edad, nota) {
     estudianteEditando = id;
 
@@ -190,9 +175,7 @@ function editarEstudiante(id, nombre, edad, nota) {
     document.getElementById("btnActualizar").style.display = "inline";
 }
 
-// ----------------------
-// 🔄 ACTUALIZAR
-// ----------------------
+
 async function actualizarEstudiante() {
     await fetch(`${API}/students/${estudianteEditando}`, {
         method: "PUT",
@@ -213,9 +196,7 @@ async function actualizarEstudiante() {
     cargarEstudiantes();
 }
 
-// ----------------------
-// 🗑️ ELIMINAR
-// ----------------------
+
 async function eliminarEstudiante(id) {
     if (!confirm("¿Eliminar estudiante?")) return;
 
@@ -227,18 +208,13 @@ async function eliminarEstudiante(id) {
     cargarEstudiantes();
 }
 
-// ----------------------
-// 🧹 LIMPIAR
-// ----------------------
 function limpiarCampos() {
     document.getElementById("nombre").value = "";
     document.getElementById("edad").value = "";
     document.getElementById("nota").value = "";
 }
 
-// ----------------------
-// 🚀 AUTO LOAD
-// ----------------------
+
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("lista")) {
         cargarEstudiantes();
@@ -250,3 +226,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnGuardar) btnGuardar.addEventListener("click", crearEstudiante);
     if (btnActualizar) btnActualizar.addEventListener("click", actualizarEstudiante);
 });
+
+function logout() {
+    localStorage.clear();
+
+    // 🔥 usa "/" para evitar 404 en Render
+    window.location.href = "/";
+}
+
+// 🔥 MUY IMPORTANTE (para que HTML lo encuentre)
+window.logout = logout;
