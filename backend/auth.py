@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException
 from dotenv import load_dotenv
 
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+import resend
 
 from . import crud
 
@@ -18,15 +18,9 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "mi_clave_secreta")
 ALGORITHM = "HS256"
 
-conf = ConnectionConfig(
-    MAIL_USERNAME=os.getenv("SMTP_USER"),
-    MAIL_PASSWORD=os.getenv("SMTP_PASSWORD"),
-    MAIL_FROM=os.getenv("SMTP_USER"),
-    MAIL_PORT=587,
-    MAIL_SERVER="smtp.gmail.com",
-    MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=False
-)
+# 🔥 API KEY (desde Render)
+resend.api_key = os.getenv("RESEND_API_KEY")
+
 
 # -------------------------
 # 🔐 OTP GENERATOR
@@ -36,43 +30,34 @@ def generar_otp():
 
 
 # -------------------------
-# 📧 ENVIAR EMAIL
+# 📧 ENVIAR EMAIL (RESEND)
 # -------------------------
 async def enviar_email_otp(email: str, otp: str):
-    message = MessageSchema(
-        subject="Código OTP",
-        recipients=[email],
-        body=f"Tu código OTP es: {otp}",
-        subtype="plain"
-    )
+    try:
+        resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": email,
+            "subject": "Código OTP",
+            "html": f"<h2>Tu código OTP es: {otp}</h2>"
+        })
 
-    fm = FastMail(conf)
-    await fm.send_message(message)
+    except Exception as e:
+        print("Error enviando correo:", e)
+        raise HTTPException(status_code=500, detail="Error enviando correo")
 
 
 # -------------------------
-# 📤 ENVIAR OTP (HÍBRIDO 🔥)
+# 📤 ENVIAR OTP
 # -------------------------
 async def enviar_otp(db, email):
     otp = generar_otp()
 
     crud.create_or_update_otp(db, email, otp)
 
-    try:
-        # intenta enviar correo
-        await enviar_email_otp(email, otp)
+    # 🔥 ENVÍO REAL POR EMAIL
+    await enviar_email_otp(email, otp)
 
-        return {"msg": "OTP enviado al correo"}
-
-    except Exception as e:
-        # 🔥 fallback si falla SMTP
-        print("Error correo:", e)
-        print(f"OTP fallback para {email}: {otp}")
-
-        return {
-            "msg": "No se pudo enviar correo, usa este OTP",
-            "otp": otp  # 🔥 clave para frontend
-        }
+    return {"msg": "OTP enviado al correo"}
 
 
 # -------------------------
