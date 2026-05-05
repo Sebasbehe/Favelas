@@ -12,7 +12,7 @@ engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,
     pool_recycle=300,
-    connect_args={}  # importante para Postgres en Render
+    connect_args={}  
 )
 
 SessionLocal = sessionmaker(

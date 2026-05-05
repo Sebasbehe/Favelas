@@ -1,10 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 
-# -----------------------
-# 📚 ESTUDIANTES
-# -----------------------
-
 def crear_estudiante(db: Session, estudiante: schemas.EstudianteCreate, email: str):
     nuevo = models.Estudiante(
         nombre=estudiante.nombre,
@@ -54,10 +50,6 @@ def eliminar_estudiante(db: Session, estudiante_id: int, email: str):
 
     return estudiante
 
-
-# -----------------------
-# 🔐 OTP
-# -----------------------
 
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()

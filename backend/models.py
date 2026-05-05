@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from .database import Base
 
-# Usuario para autenticación OTP
+
 class User(Base):
     __tablename__ = "users"
 
@@ -9,7 +9,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     otp = Column(String)
 
-# Estudiantes
+
 class Estudiante(Base):
     __tablename__ = "estudiantes"
 

@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 
-# -----------------------
-# 📚 ESTUDIANTES
-# -----------------------
+
 
 class EstudianteBase(BaseModel):
     nombre: str
@@ -18,9 +16,7 @@ class EstudianteResponse(EstudianteBase):
     class Config:
         from_attributes = True
 
-# -----------------------
-# 🔐 AUTH
-# -----------------------
+
 
 class EmailSchema(BaseModel):
     email: str
