@@ -37,4 +37,7 @@ def enviar_correo(destinatario, asunto, mensaje):
         headers=headers
     )
 
+    print("BREVO STATUS:", response.status_code)
+    print("BREVO RESPONSE:", response.text)
+
     return response.json()
