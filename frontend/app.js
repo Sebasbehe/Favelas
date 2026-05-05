@@ -2,9 +2,11 @@ const API = "https://favelas-backend.onrender.com";
 
 console.log("JS OK");
 
-
+// ======================
+// 🔐 LOGIN - ENVIAR OTP
+// ======================
 async function enviarOTP() {
-    const email = document.getElementById("email").value.trim();
+    const email = document.getElementById("email")?.value.trim();
     const btn = document.getElementById("btnSend");
 
     if (!email) {
@@ -31,6 +33,11 @@ async function enviarOTP() {
             return;
         }
 
+        // 🔥 MOSTRAR OTP SI FALLA EL CORREO (CLAVE)
+        if (data.otp) {
+            alert("Tu código OTP es: " + data.otp);
+        }
+
         localStorage.setItem("email", email);
         window.location.href = "otp.html";
 
@@ -44,10 +51,12 @@ async function enviarOTP() {
     }
 }
 
-
+// ======================
+// 🔐 OTP - VERIFICAR
+// ======================
 async function verificarOTP() {
     const email = localStorage.getItem("email");
-    const otp = document.getElementById("otp").value.trim();
+    const otp = document.getElementById("otp")?.value.trim();
     const btn = document.getElementById("btnVerify");
 
     if (!otp) {
@@ -70,7 +79,7 @@ async function verificarOTP() {
         const data = await res.json();
 
         if (!res.ok || !data.token) {
-            alert(data.error || data.msg || "OTP incorrecto");
+            alert(data.detail || data.msg || "OTP incorrecto");
             return;
         }
 
@@ -87,31 +96,33 @@ async function verificarOTP() {
     }
 }
 
+// ======================
+// 🔒 PROTEGER DASHBOARD
+// ======================
 if (window.location.pathname.includes("dashboard.html")) {
     if (!localStorage.getItem("token")) {
         window.location.href = "login.html";
     }
 }
 
-
+// ======================
+// 📚 DASHBOARD CRUD
+// ======================
 let estudianteEditando = null;
 
 function getHeaders(isJSON = false) {
     const token = localStorage.getItem("token");
-
     const headers = {};
 
-    if (token) {
-        headers["token"] = token;
-    }
-
-    if (isJSON) {
-        headers["Content-Type"] = "application/json";
-    }
+    if (token) headers["token"] = token;
+    if (isJSON) headers["Content-Type"] = "application/json";
 
     return headers;
 }
 
+// ----------------------
+// 📥 CARGAR ESTUDIANTES
+// ----------------------
 async function cargarEstudiantes() {
     const res = await fetch(`${API}/students`, {
         headers: getHeaders()
@@ -135,13 +146,16 @@ async function cargarEstudiantes() {
         lista.innerHTML += `
             <li>
                 ${e.nombre} - Edad: ${e.edad} - Nota: ${e.nota}
-                <button onclick="editarEstudiante(${e.id}, '${encodeURIComponent(e.nombre)}', ${e.edad}, ${e.nota})">✏️</button>
+                <button onclick="editarEstudiante(${e.id}, \`${encodeURIComponent(e.nombre)}\`, ${e.edad}, ${e.nota})">✏️</button>
                 <button onclick="eliminarEstudiante(${e.id})">🗑️</button>
             </li>
         `;
     });
 }
 
+// ----------------------
+// ➕ CREAR
+// ----------------------
 async function crearEstudiante() {
     const nombre = document.getElementById("nombre").value.trim();
     const edad = Number(document.getElementById("edad").value);
@@ -162,6 +176,9 @@ async function crearEstudiante() {
     cargarEstudiantes();
 }
 
+// ----------------------
+// ✏️ EDITAR
+// ----------------------
 function editarEstudiante(id, nombre, edad, nota) {
     estudianteEditando = id;
 
@@ -173,6 +190,9 @@ function editarEstudiante(id, nombre, edad, nota) {
     document.getElementById("btnActualizar").style.display = "inline";
 }
 
+// ----------------------
+// 🔄 ACTUALIZAR
+// ----------------------
 async function actualizarEstudiante() {
     await fetch(`${API}/students/${estudianteEditando}`, {
         method: "PUT",
@@ -193,6 +213,9 @@ async function actualizarEstudiante() {
     cargarEstudiantes();
 }
 
+// ----------------------
+// 🗑️ ELIMINAR
+// ----------------------
 async function eliminarEstudiante(id) {
     if (!confirm("¿Eliminar estudiante?")) return;
 
@@ -204,12 +227,18 @@ async function eliminarEstudiante(id) {
     cargarEstudiantes();
 }
 
+// ----------------------
+// 🧹 LIMPIAR
+// ----------------------
 function limpiarCampos() {
     document.getElementById("nombre").value = "";
     document.getElementById("edad").value = "";
     document.getElementById("nota").value = "";
 }
 
+// ----------------------
+// 🚀 AUTO LOAD
+// ----------------------
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("lista")) {
         cargarEstudiantes();
