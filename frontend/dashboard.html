@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Students</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Management of Students</h2>
+
+    <button onclick="logout()">Cerrar sesión</button>
+
+
+    <div class="form">
+        <input id="nombre" placeholder="Name">
+        <input id="edad" type="number" placeholder="Age">
+        <input id="nota" type="number" placeholder="Grade">
+
+        <div class="acciones">
+            <button id="btnGuardar">➕ Add</button>
+            <button id="btnActualizar" style="display:none;">✏️ Update</button>
+        </div>
+    </div>
+
+
+    <h3>Listado</h3>
+    <ul id="lista" class="lista"></ul>
+
+</div>
+
+<script src="app.js"></script>
+
+
+</body>
+</html>
