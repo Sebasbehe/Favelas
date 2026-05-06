@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Login OTP</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
+    <div class="box">
+        <div class="border-line"></div>
+        <form onsubmit="return false;">
+            <h2>Login OTP</h2>
+            <p class="form-subtitle">Ingresa tu correo para recibir el código</p>
 
-<div class="container">
-    <h2>Login OTP</h2>
+            <div class="input-box">
+                <input type="email" id="email" required>
+                <span>Correo electrónico</span>
+                <i></i>
+            </div>
 
-    <input type="email" id="email" placeholder="Correo">
+            <button class="btn" id="btnSend" onclick="enviarOTP()">
+                Enviar código
+            </button>
 
-    <button id="btnSend" onclick="enviarOTP()">Enviar código</button>
+            <p id="msg" style="color:#22d3ee; font-size:0.82rem; text-align:center; margin-top:14px;"></p>
+        </form>
+    </div>
 
-    <p id="msg"></p>
-</div>
-
-<script src="app.js"></script>
-
-<script>
-function setLoading(state) {
-    const btn = document.getElementById("btnSend");
-    btn.disabled = state;
-    btn.innerText = state ? "Enviando..." : "Enviar código";
-}
-</script>
-
+    <script src="app.js"></script>
+    <script>
+        function setLoading(state) {
+            const btn = document.getElementById("btnSend");
+            btn.disabled = state;
+            btn.innerText = state ? "Enviando..." : "Enviar código";
+        }
+    </script>
 </body>
 </html>
