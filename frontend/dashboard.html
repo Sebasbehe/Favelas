@@ -5,35 +5,84 @@
     <title>Dashboard - Students</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
+    <div class="dashboard">
 
-<div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">S</div>
+                <span>Students</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">📋</span> Listado
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📊</span> Estadísticas
+                </a>
+            </nav>
+            <button class="logout-btn" onclick="logout()">
+                ⎋ Cerrar sesión
+            </button>
+        </aside>
 
-    <h2>Management of Students</h2>
+        <!-- Main -->
+        <main class="main">
 
-    <button onclick="logout()">Cerrar sesión</button>
+            <!-- Header -->
+            <div class="dash-header">
+                <div>
+                    <h2>Management of Students</h2>
+                    <p class="dash-subtitle">Administra el listado de estudiantes</p>
+                </div>
+            </div>
 
+            <!-- Formulario -->
+            <div class="dash-card">
+                <h3 class="card-title">➕ Nuevo Estudiante</h3>
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Nombre</label>
+                        <input id="nombre" type="text" placeholder="Ej: Juan García">
+                    </div>
+                    <div class="field">
+                        <label>Edad</label>
+                        <input id="edad" type="number" placeholder="Ej: 20">
+                    </div>
+                    <div class="field">
+                        <label>Nota</label>
+                        <input id="nota" type="number" placeholder="Ej: 4.5">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-primary" id="btnGuardar">➕ Agregar</button>
+                    <button class="btn-secondary" id="btnActualizar" style="display:none;">✏️ Actualizar</button>
+                    <button class="btn-ghost" id="btnCancelar" style="display:none;" onclick="cancelarEdicion()">✕ Cancelar</button>
+                </div>
+            </div>
 
-    <div class="form">
-        <input id="nombre" placeholder="Name">
-        <input id="edad" type="number" placeholder="Age">
-        <input id="nota" type="number" placeholder="Grade">
+            <!-- Tabla -->
+            <div class="dash-card">
+                <h3 class="card-title">📋 Listado de Estudiantes</h3>
+                <div class="table-wrap">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Edad</th>
+                                <th>Nota</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista"></tbody>
+                    </table>
+                </div>
+            </div>
 
-        <div class="acciones">
-            <button id="btnGuardar">➕ Add</button>
-            <button id="btnActualizar" style="display:none;">✏️ Update</button>
-        </div>
+        </main>
     </div>
-
-
-    <h3>Listado</h3>
-    <ul id="lista" class="lista"></ul>
-
-</div>
-
-<script src="app.js"></script>
-
-
+    <script src="app.js"></script>
 </body>
 </html>
