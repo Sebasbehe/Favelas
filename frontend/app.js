@@ -2,7 +2,6 @@ const API = "https://favelas-backend.onrender.com";
 
 console.log("JS OK");
 
-
 async function enviarOTP() {
     const email = document.getElementById("email")?.value.trim();
     const btn = document.getElementById("btnSend");
@@ -31,7 +30,6 @@ async function enviarOTP() {
             return;
         }
 
-        // 🔥 MOSTRAR OTP SI FALLA EL CORREO (CLAVE)
         if (data.otp) {
             alert("Tu código OTP es: " + data.otp);
         }
@@ -51,11 +49,17 @@ async function enviarOTP() {
 
 async function verificarOTP() {
     const email = localStorage.getItem("email");
-    const otp = document.getElementById("otp")?.value.trim();
+
+    // 🔥 Une los 6 dígitos de las cajitas
+    const digits = document.querySelectorAll('.otp-digit');
+    const otp = digits.length > 0
+        ? [...digits].map(d => d.value).join('').trim()
+        : document.getElementById("otp")?.value.trim();
+
     const btn = document.getElementById("btnVerify");
 
-    if (!otp) {
-        alert("Ingresa el código OTP");
+    if (!otp || otp.length < 6) {
+        alert("Ingresa el código OTP completo");
         return;
     }
 
@@ -86,11 +90,10 @@ async function verificarOTP() {
     } finally {
         if (btn) {
             btn.disabled = false;
-            btn.innerText = "Verificar";
+            btn.innerText = "Verificar código";
         }
     }
 }
-
 
 if (window.location.pathname.includes("dashboard.html")) {
     if (!localStorage.getItem("token")) {
@@ -98,20 +101,17 @@ if (window.location.pathname.includes("dashboard.html")) {
     }
 }
 
-
 let estudianteEditando = null;
 
 function getHeaders(isJSON = false) {
     const token = localStorage.getItem("token");
     const headers = {};
-
     if (token) headers["token"] = token;
     if (isJSON) headers["Content-Type"] = "application/json";
-
     return headers;
 }
 
-
+// 🔥 CAMBIADO: ahora renderiza <tr> en lugar de <li>
 async function cargarEstudiantes() {
     const res = await fetch(`${API}/students`, {
         headers: getHeaders()
@@ -125,23 +125,35 @@ async function cargarEstudiantes() {
     }
 
     const data = await res.json();
-
     const lista = document.getElementById("lista");
     if (!lista) return;
 
     lista.innerHTML = "";
 
-    data.forEach(e => {
+    if (data.length === 0) {
+        lista.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center; color:#475569; padding:32px;">
+                    No hay estudiantes registrados
+                </td>
+            </tr>`;
+        return;
+    }
+
+    data.forEach((e, i) => {
         lista.innerHTML += `
-            <li>
-                ${e.nombre} - Edad: ${e.edad} - Nota: ${e.nota}
-                <button onclick="editarEstudiante(${e.id}, \`${encodeURIComponent(e.nombre)}\`, ${e.edad}, ${e.nota})">✏️</button>
-                <button onclick="eliminarEstudiante(${e.id})">🗑️</button>
-            </li>
-        `;
+            <tr>
+                <td>${i + 1}</td>
+                <td>${e.nombre}</td>
+                <td>${e.edad}</td>
+                <td>${e.nota}</td>
+                <td>
+                    <button class="btn-edit" onclick="editarEstudiante(${e.id}, \`${encodeURIComponent(e.nombre)}\`, ${e.edad}, ${e.nota})">✏️ Editar</button>
+                    <button class="btn-delete" onclick="eliminarEstudiante(${e.id})">🗑️ Eliminar</button>
+                </td>
+            </tr>`;
     });
 }
-
 
 async function crearEstudiante() {
     const nombre = document.getElementById("nombre").value.trim();
@@ -163,7 +175,6 @@ async function crearEstudiante() {
     cargarEstudiantes();
 }
 
-
 function editarEstudiante(id, nombre, edad, nota) {
     estudianteEditando = id;
 
@@ -173,8 +184,10 @@ function editarEstudiante(id, nombre, edad, nota) {
 
     document.getElementById("btnGuardar").style.display = "none";
     document.getElementById("btnActualizar").style.display = "inline";
+    // 🔥 Muestra botón cancelar
+    const btnCancelar = document.getElementById("btnCancelar");
+    if (btnCancelar) btnCancelar.style.display = "inline";
 }
-
 
 async function actualizarEstudiante() {
     await fetch(`${API}/students/${estudianteEditando}`, {
@@ -188,14 +201,14 @@ async function actualizarEstudiante() {
     });
 
     estudianteEditando = null;
-
     document.getElementById("btnGuardar").style.display = "inline";
     document.getElementById("btnActualizar").style.display = "none";
+    const btnCancelar = document.getElementById("btnCancelar");
+    if (btnCancelar) btnCancelar.style.display = "none";
 
     limpiarCampos();
     cargarEstudiantes();
 }
-
 
 async function eliminarEstudiante(id) {
     if (!confirm("¿Eliminar estudiante?")) return;
@@ -208,12 +221,21 @@ async function eliminarEstudiante(id) {
     cargarEstudiantes();
 }
 
+// 🔥 NUEVO: cancela la edición sin guardar
+function cancelarEdicion() {
+    estudianteEditando = null;
+    limpiarCampos();
+    document.getElementById("btnGuardar").style.display = "inline";
+    document.getElementById("btnActualizar").style.display = "none";
+    const btnCancelar = document.getElementById("btnCancelar");
+    if (btnCancelar) btnCancelar.style.display = "none";
+}
+
 function limpiarCampos() {
     document.getElementById("nombre").value = "";
     document.getElementById("edad").value = "";
     document.getElementById("nota").value = "";
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("lista")) {
@@ -225,14 +247,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnGuardar) btnGuardar.addEventListener("click", crearEstudiante);
     if (btnActualizar) btnActualizar.addEventListener("click", actualizarEstudiante);
+
+    // 🔥 Auto-avanzar cajitas OTP
+    const digits = document.querySelectorAll('.otp-digit');
+    digits.forEach((el, i) => {
+        el.addEventListener('input', () => {
+            if (el.value && i < digits.length - 1) digits[i + 1].focus();
+        });
+        el.addEventListener('keydown', e => {
+            if (e.key === 'Backspace' && !el.value && i > 0) digits[i - 1].focus();
+        });
+    });
 });
 
 function logout() {
     localStorage.clear();
-
-    // 🔥 usa "/" para evitar 404 en Render
     window.location.href = "/";
 }
 
-// 🔥 MUY IMPORTANTE (para que HTML lo encuentre)
 window.logout = logout;
+window.cancelarEdicion = cancelarEdicion;
