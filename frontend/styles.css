@@ -114,6 +114,7 @@ body {
     margin-bottom: 10px;
 }
 
+/* ── Input flotante ── */
 .input-box {
     position: relative;
     width: 100%;
@@ -168,6 +169,25 @@ body {
     border-radius: 8px;
 }
 
+/* ── Links ── */
+.imp-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.imp-links a {
+    color: #475569;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: .3s;
+}
+
+.imp-links a:hover {
+    color: #22d3ee;
+}
+
+/* ── Botón ── */
 .btn {
     width: 100%;
     margin-top: 35px;
@@ -212,4 +232,35 @@ body {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+}
+
+/* ── OTP cajitas ── */
+.otp-boxes {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 35px;
+    margin-bottom: 10px;
+}
+
+.otp-digit {
+    width: 52px;
+    height: 58px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+    transition: .3s;
+    caret-color: #22d3ee;
+}
+
+.otp-digit:focus {
+    border-color: rgba(6,182,212,0.6);
+    background: rgba(6,182,212,0.08);
+    box-shadow: 0 0 0 3px rgba(6,182,212,0.12);
 }
